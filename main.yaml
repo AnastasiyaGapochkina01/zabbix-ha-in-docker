@@ -4,3 +4,5 @@
   roles:
     - install_docker
     - postgres
+    - zabbix_server
+    - zabbix_frontend

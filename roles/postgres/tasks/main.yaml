@@ -1,7 +1,7 @@
 ---
 - name: Run postgres container
   docker_container:
-    name: postgres
+    name: zabbix-postgres
     image: postgres
     state: started
     recreate: yes

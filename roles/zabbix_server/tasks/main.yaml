@@ -1,0 +1,15 @@
+---
+- name: Start zabbix-server
+  docker_container:
+    name: zabbix-server
+    image: zabbix/zabbix-server-pgsql:ubuntu-latest
+    state: started
+    recreate: yes
+    links:
+      - 'zabbix-postgres:postgres'
+    published_ports:
+      - '10051:10051'
+    env:
+      DB_SERVER_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

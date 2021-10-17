@@ -1,0 +1,19 @@
+---
+- name: Start zabbix-frontend
+  docker_container:
+    name: zabbix-frontend
+    image: zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
+    state: started
+    recreate: yes
+    published_ports:
+      - '8080:8080'
+      - '8443:8443'
+    links:
+      - 'zabbix-server:zabbix-server'
+      - 'zabbix-postgres:postgres'
+    env:
+      DB_SERVER_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: Europe/Moscow

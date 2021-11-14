@@ -1,8 +1,8 @@
 ---
-- hosts: all
+- hosts: zabbix
   become: true
   roles:
     - install_docker
-    - postgres
+    - mariadb
     - zabbix_server
     - zabbix_frontend

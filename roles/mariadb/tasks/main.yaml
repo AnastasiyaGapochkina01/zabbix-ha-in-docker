@@ -1,0 +1,15 @@
+---
+- name: Run database container
+  docker_container:
+    name: zabbix-db
+    image: mariadb:latest
+    state: started
+    recreate: yes
+    env:
+      MARIADB_USER: zabbix
+      MARIADB_PASSWORD: zabbix
+      MARIADB_ROOT_PASSWORD: mariadb
+      MYSQL_DATABASE: zabbixdb
+    published_ports:
+      - '3306:3306'
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_bin

@@ -1,0 +1,32 @@
+---
+- name: Include var file
+  include_vars: group_vars/vars.yaml
+
+- name: Copy master files
+  copy:
+    src: master.cnf
+    dest: /opt/my.cnf
+  when: role == "master"
+
+- name: Copy slave files
+  copy:
+    src: slave.cnf
+    dest: /opt/my.cnf
+  when: role == "slave"
+
+- name: Run database container
+  docker_container:
+    name: zabbix-db
+    image: mariadb:latest
+    state: started
+    recreate: yes
+    env:
+      MARIADB_USER: "{{ db_user }}"
+      MARIADB_PASSWORD: "{{ db_user_password }}"
+      MARIADB_ROOT_PASSWORD: "{{ db_root_password }}"
+      MYSQL_DATABASE: "{{ db }}"
+    published_ports:
+      - '3306:3306'
+    volumes:
+      - "/opt/zabbix:/var/lib/mysql"
+      - "/opt/my.cnf:/etc/mysql/my.cnf"

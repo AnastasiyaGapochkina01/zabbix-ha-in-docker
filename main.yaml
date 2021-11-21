@@ -3,6 +3,18 @@
   become: true
   roles:
     - install_docker
-    - postgres
+
+- hosts: zabbix-db
+  become: true
+  roles:
+    - mariadb
+
+- hosts: zabbix-server
+  become: true
+  roles:
     - zabbix_server
+
+- hosts: zabbix-frontend
+  become: true
+  roles:
     - zabbix_frontend

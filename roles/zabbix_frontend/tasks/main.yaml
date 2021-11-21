@@ -1,19 +1,20 @@
 ---
+- name: Include var file
+  include_vars: group_vars/vars.yaml
+
 - name: Start zabbix-frontend
   docker_container:
     name: zabbix-frontend
-    image: zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
+    image: zabbix/zabbix-web-nginx-mysql:ubuntu-latest
     state: started
     recreate: yes
     published_ports:
       - '8080:8080'
       - '8443:8443'
-    links:
-      - 'zabbix-server:zabbix-server'
-      - 'zabbix-postgres:postgres'
     env:
-      DB_SERVER_HOST: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      ZBX_SERVER_HOST: zabbix-server
+      DB_SERVER_HOST: "{{ db_host }}"
+      MYSQL_USER: "{{ db_user }}"
+      MYSQL_PASSWORD: "{{ db_user_password }}"
+      ZBX_SERVER_HOST: "{{ be_host }}"
+      MYSQL_DATABASE: "{{ db }}"
       PHP_TZ: Europe/Moscow

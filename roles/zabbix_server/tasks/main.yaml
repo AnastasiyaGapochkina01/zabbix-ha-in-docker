@@ -1,16 +1,17 @@
 ---
+- name: Include var file
+  include_vars: group_vars/vars.yaml
+
 - name: Start zabbix-backend
   docker_container:
     name: zabbix-backend
     image: zabbix/zabbix-server-mysql:ubuntu-5.4-latest
     state: started
     recreate: yes
-    links:
-      - 'zabbix-db:mysql'
     published_ports:
       - '10051:10051'
     env:
-      DB_SERVER_HOST: zabbix-db
-      MYSQL_USER: zabbix
-      MYSQL_PASSWORD: zabbix
-      MYSQL_DATABASE: zabbixdb
+      DB_SERVER_HOST: "{{ db_host }}"
+      MYSQL_USER: "{{ db_user }}"
+      MYSQL_PASSWORD: "{{ db_user_password }}"
+      MYSQL_DATABASE: "{{ db }}"

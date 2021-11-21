@@ -1,8 +1,12 @@
-[test-host]
-192.168.56.103
+[zabbix-db]
+192.168.56.10 role=master
+192.168.56.11 role=slave
 
-[zabbix]
-192.168.56.10
+[zabbix-server]
+192.168.56.15
+
+[zabbix-frontend]
+192.168.56.16
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3

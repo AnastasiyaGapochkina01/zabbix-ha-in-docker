@@ -1,8 +1,12 @@
 [mariadb]
 character-set-server=utf8
 collation-server=utf8_bin
-log-bin
+{% if role == "master" %}
+log-bin 
 server_id=1
-log-basename=master1
+log-basename=master-1
 bind-address=0.0.0.0
+{% else %}
+server_id=2
+{% endif %}
 !includedir /etc/mysql/conf.d/

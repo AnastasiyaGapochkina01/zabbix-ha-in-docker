@@ -1,0 +1,39 @@
+#!/bin/bash
+
+ROOT_PSWD="{{ db_root_password }}"
+REPL_PSWD="{{ replica_password }}"
+
+MASTER_HOST="{{ db_master_host }}"
+SLAVE_HOST="{{ db_slave_host }}"
+SLAVE_USER="{{ replica_user }}"
+CONTAINER="{{ container_name }}"
+
+# MASTER
+echo -e "Creating replication user..."
+docker exec $CONTAINER mysql -h $MASTER_HOST -p$ROOT_PSWD mysql -e "create user if not exists $SLAVE_USER@'%' identified by '$REPL_PSWD'; grant replication slave on *.* to $SLAVE_USER@'%'; flush privileges;"
+
+echo -e "Get info about master state..."
+MASTER_STATUS=$(docker exec $CONTAINER mysql -h $MASTER_HOST -p$ROOT_PSWD -e "show master status;" | awk 'NR==2{print}')
+
+LOG_FILE=$(echo $MASTER_STATUS | awk '{print $1}')
+LOG_POS=$(echo $MASTER_STATUS | awk '{print $2}')
+
+# SLAVE
+echo -e "Init slave..."
+docker exec $CONTAINER mysql -h $SLAVE_HOST -p$ROOT_PSWD -e "STOP SLAVE;
+                                                             RESET SLAVE; \
+	                                                            CHANGE MASTER TO \
+	                                                            MASTER_HOST='$MASTER_HOST', \
+                                                              MASTER_USER='$SLAVE_USER', \
+                                                              MASTER_PASSWORD='$REPL_PSWD', \
+                                                              MASTER_PORT=3306, \
+                                                              MASTER_LOG_FILE='$LOG_FILE', \
+	                                                            MASTER_LOG_POS=$LOG_POS, \
+	                                                            MASTER_CONNECT_RETRY=10; \
+						                                                  START SLAVE; "
+SLAVE_STATUS=$(docker exec $CONTAINER mysql -h $SLAVE_HOST -p$ROOT_PSWD -e "SHOW SLAVE STATUS\G;" | grep "Waiting for master")
+if [ -z "$SLAVE_STATUS" ]; then
+  echo "  - ERROR! Wrong slave IO state."
+else
+  echo "  - Slave IO state OK"
+fi

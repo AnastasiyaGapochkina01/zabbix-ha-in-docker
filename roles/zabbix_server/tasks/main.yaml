@@ -11,7 +11,7 @@
     published_ports:
       - '10051:10051'
     env:
-      DB_SERVER_HOST: "{{ db_host }}"
+      DB_SERVER_HOST: "{{ db_master_host }}"
       MYSQL_USER: "{{ db_user }}"
       MYSQL_PASSWORD: "{{ db_user_password }}"
       MYSQL_DATABASE: "{{ db }}"
